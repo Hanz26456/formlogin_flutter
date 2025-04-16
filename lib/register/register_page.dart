@@ -36,7 +36,7 @@ class _RegisterPageState extends State<RegisterPage> {
       firstDate: DateTime(1900),
       lastDate: DateTime.now(),
     ))!;
-    if (picked != null && picked != _selectedDate) {
+    if (picked != _selectedDate) {
       setState(() {
         _selectedDate = picked;
       });
