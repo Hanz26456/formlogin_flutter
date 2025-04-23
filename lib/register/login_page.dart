@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'home_page.dart';
 import 'register_page.dart';
 import 'forgot_password_page.dart';
+import '../database/databasehelper.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -14,7 +14,22 @@ class _LoginPageState extends State<LoginPage> {
   final _loginKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final db = DatabaseHelper();
   bool _isObscure = true;
+
+// LOGIN 
+  void handleLogin() async {
+    final user = await db.login(
+      _emailController.text,
+      _passwordController.text,
+    );
+
+    if (user != null) {
+      print('Login berhasil! Selamat datang, ${user.fullname}');
+    } else {
+      print('Email atau password salah!');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +80,7 @@ class _LoginPageState extends State<LoginPage> {
                 key: _loginKey,
                 child: Column(
                   children: [
-                   TextFormField(
+                    TextFormField(
                       controller: _emailController,
                       decoration: InputDecoration(
                         hintText: 'Enter your email',
@@ -144,27 +159,27 @@ class _LoginPageState extends State<LoginPage> {
                     ElevatedButton(
                       onPressed: () {
                         if (_loginKey.currentState!.validate()) {
-                          String email = _emailController.text;
-                          String password = _passwordController.text;
-
-                          if (RegisterPage.users.containsKey(email) &&
-                              RegisterPage.users[email] == password) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Login berhasil!')),
-                            );
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => HomePage(email: email),
-                              ),
-                            );
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content:
-                                      Text('Username atau Password salah')),
-                            );
-                          }
+                          // String email = _emailController.text;
+                          // String password = _passwordController.text;
+                          handleLogin();
+                          // if (RegisterPage.users.containsKey(email) &&
+                          //     RegisterPage.users[email] == password) {
+                          //   ScaffoldMessenger.of(context).showSnackBar(
+                          //     const SnackBar(content: Text('Login berhasil!')),
+                          //   );
+                          //   Navigator.pushReplacement(
+                          //     context,
+                          //     MaterialPageRoute(
+                          //       builder: (context) => HomePage(email: email),
+                          //     ),
+                          //   );
+                          // } else {
+                          //   ScaffoldMessenger.of(context).showSnackBar(
+                          //     const SnackBar(
+                          //         content:
+                          //             Text('Username atau Password salah')),
+                          //   );
+                          // }
                         }
                       },
                       style: ElevatedButton.styleFrom(

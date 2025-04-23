@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../database/databasehelper.dart'; // Ganti dengan path yang sesuai
+import '../model/usermodel.dart'; // Ganti dengan path yang sesuai
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -25,8 +27,31 @@ class _RegisterPageState extends State<RegisterPage> {
   bool _obscurePassword =
       true; // Menyimpan status password apakah tersembunyi atau tidak
   bool _obscureConfirmPassword = true; // Menyimpan status konfirmasi password
-
+  final db = DatabaseHelper();
   final List<String> _genders = ['Male', 'Female', 'Other']; // Gender options
+
+//fungsi register
+void handleRegister() async {
+  bool emailUsed = await db.isEmailTaken(_emailController.text);
+  if (emailUsed) {
+    print('Email sudah digunakan!');
+    return;
+  }
+
+  UserModel newUser = UserModel(
+    username: _usernameController.text,
+    fullname: _fullnameController.text,
+    email: _emailController.text,
+    password: _passwordController.text,
+    phone: _phoneController.text,
+    address: _addressController.text,
+    birthDate: _selectedDate,
+    gender: _selectedGender,
+  );
+
+  await db.registerUser(newUser);
+  print('Registrasi berhasil!');
+}
 
   // Function to handle the date picker
   Future<void> _selectDate(BuildContext context) async {
@@ -311,21 +336,22 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                     const SizedBox(height: 20),
 
+
                     // Button Register
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: () {
                           if (_registerKey.currentState!.validate()) {
-                            RegisterPage.users[_emailController.text] =
-                                _passwordController.text;
+                            // RegisterPage.users[_emailController.text] =
+                            //     _passwordController.text;
+                            handleRegister(); // Call the register function
+                            // ScaffoldMessenger.of(context).showSnackBar(
+                            //   const SnackBar(
+                            //       content: Text('Registration successful!')),
+                            // );
 
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text('Registration successful!')),
-                            );
-
-                            Navigator.pop(context);
+                            // Navigator.pop(context);
                           }
                         },
                         style: ElevatedButton.styleFrom(
